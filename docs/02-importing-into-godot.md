@@ -15,6 +15,8 @@ Set the window up for the art's scale right away — **Project → Project Setti
 
 ## 2. Restructure the pack on disk (outside Godot)
 
+The pack already separates parts from frame sequences (`PNG/Vector Parts/` and `PNG/PNG Sequences/<Animation>/`); the remaining work is renaming — lowercase, hyphens instead of spaces, and the redundant `0_Villager_<Animation>_` prefix stripped from frame files. Animation folder names become the exact animation names in Godot.
+
 Target layout — build it in a staging folder, not in the project yet:
 
 ```
@@ -37,27 +39,27 @@ staging/
         └── … one folder per animation
 ```
 
-Rules: lowercase, hyphens instead of spaces, animation folder names become the exact animation names in Godot.
-
 ### Automated restructuring — PowerShell
 
 Run from the folder that contains `example-asset-pack/`:
 
 ```powershell
-$src = "example-asset-pack"
+$png = "example-asset-pack\Villager_1\PNG"
 $dst = "staging\villager"
 
-# frame sequences: 0_Villager_<Anim>_<n>.png  →  frames/<anim-kebab>/<n>.png
-Get-ChildItem "$src\0_Villager_*.png" | ForEach-Object {
-    if ($_.BaseName -match '^0_Villager_(.+)_(\d+)$') {
-        $anim = $Matches[1].ToLower() -replace ' ', '-'
-        $out = Join-Path $dst "frames\$anim"
-        New-Item -ItemType Directory -Force $out | Out-Null
-        Copy-Item $_.FullName (Join-Path $out "$($Matches[2]).png")
+# frame sequences: PNG Sequences\<Anim>\0_Villager_<Anim>_<n>.png → frames\<anim-kebab>\<n>.png
+Get-ChildItem "$png\PNG Sequences" -Directory | ForEach-Object {
+    $anim = $_.Name.ToLower() -replace ' ', '-'
+    $out = Join-Path $dst "frames\$anim"
+    New-Item -ItemType Directory -Force $out | Out-Null
+    Get-ChildItem $_.FullName -Filter *.png | ForEach-Object {
+        if ($_.BaseName -match '_(\d+)$') {
+            Copy-Item $_.FullName (Join-Path $out "$($Matches[1]).png")
+        }
     }
 }
 
-# part PNGs: everything not frame-numbered and not a vendor extra
+# vector parts: Vector Parts\<Part>.png → parts\<kebab-name>.png
 $partMap = @{
     'Body.png'='body.png'; 'Head.png'='head.png'
     'Face 01.png'='face-01.png'; 'Face 02.png'='face-02.png'; 'Face 03.png'='face-03.png'
@@ -68,20 +70,21 @@ $partMap = @{
 }
 New-Item -ItemType Directory -Force "$dst\parts" | Out-Null
 $partMap.GetEnumerator() | ForEach-Object {
-    Copy-Item (Join-Path $src $_.Key) (Join-Path "$dst\parts" $_.Value)
+    Copy-Item (Join-Path "$png\Vector Parts" $_.Key) (Join-Path "$dst\parts" $_.Value)
 }
 ```
 
 ### Same thing — bash
 
 ```bash
-src="example-asset-pack"; dst="staging/villager"
-for f in "$src"/0_Villager_*.png; do
-  base="$(basename "$f" .png)"
-  anim="$(echo "$base" | sed -E 's/^0_Villager_(.+)_[0-9]+$/\1/' | tr 'A-Z ' 'a-z-')"
-  n="$(echo "$base" | sed -E 's/^.*_([0-9]+)$/\1/')"
+png="example-asset-pack/Villager_1/PNG"; dst="staging/villager"
+for d in "$png/PNG Sequences"/*/; do
+  anim="$(basename "$d" | tr 'A-Z ' 'a-z-')"
   mkdir -p "$dst/frames/$anim"
-  cp "$f" "$dst/frames/$anim/$n.png"
+  for f in "$d"*.png; do
+    n="$(basename "$f" .png | sed -E 's/^.*_([0-9]+)$/\1/')"
+    cp "$f" "$dst/frames/$anim/$n.png"
+  done
 done
 mkdir -p "$dst/parts"
 declare -A parts=( ["Body.png"]=body.png ["Head.png"]=head.png
@@ -90,10 +93,10 @@ declare -A parts=( ["Body.png"]=body.png ["Head.png"]=head.png
   ["Left Hand.png"]=hand-l.png ["Right Hand.png"]=hand-r.png
   ["Left Leg.png"]=leg-l.png ["Right Leg.png"]=leg-r.png
   ["Sword.png"]=sword.png ["SlashFX.png"]=slash-fx.png )
-for k in "${!parts[@]}"; do cp "$src/$k" "$dst/parts/${parts[$k]}"; done
+for k in "${!parts[@]}"; do cp "$png/Vector Parts/$k" "$dst/parts/${parts[$k]}"; done
 ```
 
-Everything else in the pack (`.eps`, `.scml`, `.unitypackage`, readme, license) goes to an **archive folder outside the project** — e.g. `art-source/villager-pack/`. If you must keep it inside the project folder, drop an empty file named `.gdignore` in it; Godot will skip the folder entirely.
+Everything else in the pack (`AI/`, `EPS/`, `Animations.scml`, `Unity Package/`, `TXT/`) goes to an **archive folder outside the project** — e.g. `art-source/villager-pack/`. Keep `Animations.scml` findable: guides 04–05 consult it for draw order and timing. If you must keep archive material inside the project folder, drop an empty file named `.gdignore` in its folder; Godot will skip it entirely.
 
 ## 3. Copy into the project
 

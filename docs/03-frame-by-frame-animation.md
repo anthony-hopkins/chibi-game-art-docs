@@ -27,38 +27,40 @@ The panel has an animation list on the left (one entry, `default`) and a frame s
 1. In the animation list, double-click `default` and rename it to `idle`.
 2. With `idle` selected, click the **Add frames from file** button in the frame-strip toolbar (folder icon — *not* the grid icon, which is for sprite sheets).
 3. Navigate to `res://characters/villager/frames/idle/`, select `000.png`, press `Ctrl+A` to select all files, click **Open**.
-4. All 18 frames appear in the strip, in file order. Gaps in the source numbering (see guide 01) don't matter — order is all Godot uses.
+4. All 18 frames appear in the strip, in file order. (Order is all Godot uses — if a pack's numbering has gaps, that's harmless.)
 
 ### Tune speed and looping
 
 Top of the frame strip:
 
-- **Speed**: `12` FPS. The strip's **play button** previews instantly in the viewport — judge with your eyes; vendor art usually sits well between 10 and 18 FPS.
+- **Speed**: `30` FPS — the vendor's authored rate (every sequence in this pack works out to exactly 30 FPS; see the timing note under the table below). The strip's **play button** previews instantly in the viewport.
 - **Loop** (the circular-arrows toggle next to the animation name): **On** for idle.
 
 ### Add the rest
 
-Click the **Add Animation** button (paper icon, top-left of the panel) for each remaining animation, rename it to match its folder, add its frames the same way. Recommended starting values:
+Click the **Add Animation** button (paper icon, top-left of the panel) for each remaining animation, rename it to match its folder, add its frames the same way. Starting values:
 
-| Animation name | Frames | FPS | Loop |
-|---|---|---|---|
-| `idle` | 18 | 12 | ✔ |
-| `idle-blinking` | 16 | 12 | ✔ |
-| `walking` | 23 | 18 | ✔ |
-| `running` | 11 | 15 | ✔ |
-| `jump-start` | 5 | 15 | ✖ |
-| `jump-loop` | 6 | 10 | ✔ |
-| `sliding` | 6 | 15 | ✖ |
-| `kicking` | 11 | 15 | ✖ |
-| `slashing` | 10 | 15 | ✖ |
-| `slashing-in-the-air` | 11 | 15 | ✖ |
-| `run-slashing` | 11 | 15 | ✖ |
-| `throwing` | 9 | 15 | ✖ |
-| `throwing-in-the-air` | 12 | 15 | ✖ |
-| `run-throwing` | 11 | 15 | ✖ |
-| `hurt` | 10 | 15 | ✖ |
-| `falling-down` | 6 | 12 | ✖ |
-| `dying` | 12 | 12 | ✖ |
+| Animation name | Frames | FPS | Loop | Duration |
+|---|---|---|---|---|
+| `idle` | 18 | 30 | ✔ | 0.6 s |
+| `idle-blinking` | 18 | 30 | ✔ | 0.6 s |
+| `walking` | 24 | 30 | ✔ | 0.8 s |
+| `running` | 12 | 30 | ✔ | 0.4 s |
+| `jump-start` | 6 | 30 | ✖ | 0.2 s |
+| `jump-loop` | 6 | 30 | ✔ | 0.2 s |
+| `sliding` | 6 | 30 | ✖ | 0.2 s |
+| `kicking` | 12 | 30 | ✖ | 0.4 s |
+| `slashing` | 12 | 30 | ✖ | 0.4 s |
+| `slashing-in-the-air` | 12 | 30 | ✖ | 0.4 s |
+| `run-slashing` | 12 | 30 | ✖ | 0.4 s |
+| `throwing` | 12 | 30 | ✖ | 0.4 s |
+| `throwing-in-the-air` | 12 | 30 | ✖ | 0.4 s |
+| `run-throwing` | 12 | 30 | ✖ | 0.4 s |
+| `hurt` | 12 | 30 | ✖ | 0.4 s |
+| `falling-down` | 6 | 30 | ✖ | 0.2 s |
+| `dying` | 15 | 30 | ✖ | 0.5 s |
+
+**Where 30 comes from:** the pack's `Animations.scml` records each animation's authored length (Idle 600 ms ÷ 18 frames, Walking 800 ms ÷ 24, Dying 500 ms ÷ 15 … all = 33 ms/frame = 30 FPS). Treat 30 as the vendor-intended baseline, then adjust to taste — dropping `idle` to ~15 FPS gives a calmer breathe, and slowing `dying` adds weight. FPS is a per-animation creative knob, not a technical constraint.
 
 You only need `idle`, `running`, and `slashing` to finish this guide — add the rest whenever.
 

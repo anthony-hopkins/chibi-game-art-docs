@@ -15,6 +15,8 @@ Everything in this guide happens with `AnimationPlayer` selected in the Scene do
 
 ### Create it
 
+Timing tip: the pack's `Animations.scml` records the vendor's authored durations (Idle 0.6 s, Walking 0.8 s, Slashing 0.4 s, …) — good reference points when your version feels too slow or too frantic. We'll author a calmer 1.2 s idle here on purpose.
+
 1. In the Animation panel click **Animation → New**, name it `idle`.
 2. Set **length** to `1.2` (seconds, field at the panel's top-right).
 3. Click the **loop icon** (circular arrows, right of the length field) → loop enabled.
@@ -33,7 +35,7 @@ An idle is a gentle breathe: body bobs a few pixels, head tilts a hair, arms swa
 
 1. Move the playhead to `0.6`.
 2. Pose the mid-point — small numbers read best at chibi scale:
-   - `body` Position: `y` −4 px from rest (type it in the Inspector; remember the rig's canvas is 900 px, so 4 px is subtle on purpose)
+   - `body` Position: `y` −4 px from rest (type it in the Inspector; the rig is authored at the 900-px template scale, so 4 px is subtle on purpose)
    - `head` Rotation: `−2`°
    - `arm-l` / `arm-r` Rotation: `±3`°
 3. Click the ⧫ next to each changed property. (After the first key, ⧫ just adds a key to the existing track — no dialog.)
@@ -171,7 +173,7 @@ The full loop — pack → import → rig → keyframes → input-driven playbac
 |---|---|
 | Pose stays broken after scrubbing an animation in the editor | Play the `RESET` animation once, or fix the RESET track's values (Animation panel → RESET). |
 | Loop pops at the wrap point | Last key ≠ first key on some track — re-paste the t = 0 keys at the end time. |
-| Limb rotates around the wrong point in an animation | Its pivot moved: reassert `position == -offset` from guide 04 (a stray drag in move-mode is the usual culprit). |
+| Limb rotates around the wrong point in an animation | Its pivot moved: the `offset` must keep the joint at the node origin (guide 04 §2) — a stray edit to offset instead of position is the usual culprit. |
 | Character slides while attacking | `velocity.x` not zeroed during the attack branch. |
 | Mirrored character's collision breaks | You flipped the `CharacterBody2D` instead of the `Rig` child. |
 | `animation_finished` not firing for `slash` | The animation got loop enabled by accident — turn the loop toggle off. |

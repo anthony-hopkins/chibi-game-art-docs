@@ -1,12 +1,12 @@
-# 04 – Rigging the Character in Spine
+# 06 – Rigging the Character in Spine
 
-This guide takes the PNG folder from [guide 03](03-exporting-from-gimp-for-spine.md) and builds an animation-ready skeleton in **Spine 4.2**.
+This guide takes the PNG folder from [guide 05](05-exporting-from-gimp-for-spine.md) and builds an animation-ready skeleton in **Spine 4.2**.
 
 > **License note:** basic rigging and animation work in Spine **Essential**. Meshes, weights, IK/transform/path constraints require Spine **Professional**. Pro-only steps are marked below and are optional for a simple chibi.
 
 Spine has two modes, toggled with the big button in the top-left corner (or **Tab**):
 - **SETUP** — build the skeleton, attach images. Everything in this guide happens here.
-- **ANIMATE** — key motion over time (guide 05).
+- **ANIMATE** — key motion over time (guide 07).
 
 ---
 
@@ -67,7 +67,7 @@ How to create each bone:
    - Repeat for `arm-back`/`hand-back`, then `leg-front`/`foot-front`, `leg-back`/`foot-back` — leg bones pivot at the hip crease, foot bones at the ankle.
 4. Name each bone as you create it (Spine prompts, or rename in the Tree). Use the same names as the images — future-you will thank you.
 
-> **Pivot placement is the whole game.** A shoulder pivot placed too low makes the arm dislocate when it swings. Place every pivot at the center of the *overlap cap* you drew in GIMP (guide 02, step 4). Zoom in.
+> **Pivot placement is the whole game.** A shoulder pivot placed too low makes the arm dislocate when it swings. Place every pivot at the center of the *overlap cap* you reconstructed in GIMP (guide 04, step 4). Zoom in.
 
 ## Step 4 — Attach images to bones
 
@@ -78,7 +78,7 @@ Right now every slot hangs off `root`. Re-parent each slot to its bone:
 3. **Test every joint now:** switch to the **Rotate** tool, select each bone, and rotate it back and forth (then Ctrl+Z, or set rotation back to 0):
    - The part should pivot naturally from its joint.
    - The overlap cap should stay hidden behind the neighbor part at reasonable angles (±60°).
-   - If a gap opens, either move the bone pivot, or go back to GIMP and extend that part's overlap (then re-export — rigging survives, see guide 03).
+   - If a gap opens, either move the bone pivot, or go back to GIMP and extend that part's overlap cap (then re-export — rigging survives, see guide 05).
 
 ## Step 5 — Set up poses that survive animation
 
@@ -115,4 +115,4 @@ With single-bone chibi legs (no knee), IK is barely necessary — a straight FK 
 - [ ] Every joint rotate-tested with no gaps at ±60°
 - [ ] Feet at origin, project saved as `hero.spine`
 
-Next: [05 – Animating in Spine](05-animating-in-spine.md).
+Next: [07 – Animating in Spine](07-animating-in-spine.md).

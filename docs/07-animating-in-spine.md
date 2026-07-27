@@ -1,6 +1,6 @@
-# 05 – Animating in Spine
+# 07 – Animating in Spine
 
-With the rig from [guide 04](04-rigging-in-spine.md), this guide creates the three animations every game character needs — **idle**, **walk**, **attack** — in Spine 4.2's Animate mode.
+With the rig from [guide 06](06-rigging-in-spine.md), this guide creates the three animations every game character needs — **idle**, **walk**, **attack** — in Spine 4.2's Animate mode.
 
 ---
 
@@ -70,9 +70,9 @@ Non-looping, fast. Target: **~0.4 s** (12 frames): anticipation → strike → s
 3. **Frames 5–6 — Strike:** this transition is nearly instant — that's the punch. At frame 6: `torso` **forward 12°**, `arm-front` swung **down/forward ~120°** from the wind-up, `hand-front` rotated to extend the arc, `hip` dips 6 px. Key everything.
 4. **Frames 7–12 — Settle:** ease back to a pose close to (but not exactly) setup by frame 12; the return should be slower than the strike.
 5. Curve polish (Graph view): make frames 4→6 **fast-out** (sharp acceleration into the hit) and 6→12 **slow-in**. The asymmetry — slow wind-up, instant hit, soft recovery — is what makes it feel forceful.
-6. Add an **event** for gameplay: Tree ▸ skeleton ▸ right-click **Events** node ▸ New Event → name `hit`. In the dopesheet's Events row, key the `hit` event at **frame 6**. In Godot you'll receive this event as a signal and apply damage exactly on the strike frame (guide 06).
+6. Add an **event** for gameplay: Tree ▸ skeleton ▸ right-click **Events** node ▸ New Event → name `hit`. In the dopesheet's Events row, key the `hit` event at **frame 6**. In Godot you'll receive this event as a signal and apply damage exactly on the strike frame (guide 08).
 
-> No weapon image yet? Animate the swing anyway with the empty hand — then add a `weapon` slot under `hand-front` later; the animation already works. (A weapon is just one more GIMP layer + slot parented to the hand bone.)
+> No weapon image yet? Animate the swing anyway with the empty hand — then add a `weapon` slot under `hand-front` later; the animation already works. (A weapon is one more Scenario generation — see the weapons section of [guide 03](03-scenario-prompt-library.md) — dropped into the images folder and attached to the hand bone. Weapons are single rigid pieces, so they skip the GIMP splitting step entirely.)
 
 ## Previewing like the game will
 
@@ -85,4 +85,4 @@ Non-looping, fast. Target: **~0.4 s** (12 frames): anticipation → strike → s
 - One skeleton = one character = all its animations in one `.spine` project.
 - Save. Export comes next.
 
-Next: [06 – Getting Spine Characters into Godot](06-spine-to-godot.md).
+Next: [08 – Getting Spine Characters into Godot](08-spine-to-godot.md).

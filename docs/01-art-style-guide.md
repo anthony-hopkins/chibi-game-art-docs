@@ -1,6 +1,9 @@
 # 01 – Art Style Guide
 
-This guide defines the visual rules extracted from the two reference images. Every character and environment asset should be checkable against this page.
+This guide defines the visual rules extracted from the two reference images. It serves two jobs in the Scenario-based pipeline:
+
+1. **Acceptance criteria** — every generated asset is judged against this page before it's approved.
+2. **Prompt vocabulary** — the shared style blocks in [03 – Scenario Prompt Library](03-scenario-prompt-library.md) are these rules translated into prompt language; when tuning prompts or training the style model ([guide 02](02-generating-assets-in-scenario.md)), this page is the source of truth.
 
 References:
 - Characters: [Chibi-game-art.jpg](reference-images/Chibi-game-art.jpg)
@@ -12,7 +15,7 @@ References:
 
 ### 1.1 Proportions
 
-The reference characters are roughly **2 heads tall**. Use this proportion map when blocking out a character on a 1024×1024 canvas:
+The reference characters are roughly **2 heads tall**. Use this proportion map when judging generated candidates — a character that misses these ratios gets regenerated, not fixed by hand:
 
 ```
 ┌──────────────────────────┐
@@ -52,7 +55,7 @@ Faces carry almost all the personality in this style:
 ### 1.3 Line work
 
 - **Every shape gets an outline.** Line color is **very dark warm brown / near-black** (e.g., `#2a2020`), *not* pure black — pure black looks harsher than the reference.
-- **Line weight:** thick and confident. At a 1024 px working canvas, use **8–12 px** for outer silhouette lines and **5–7 px** for interior detail lines. Outer lines are always heavier than inner lines.
+- **Line weight:** thick and confident. On a 2048 px character image, expect roughly **16–24 px** outer silhouette lines and **10–14 px** interior detail lines; outer lines are always heavier than inner lines. These numbers matter twice: when judging generated output, and when matching stroke width while reconstructing overlap caps in GIMP ([guide 04](04-splitting-characters-in-gimp.md)).
 - Lines have **rounded caps and joins** — no sharp pen tapers. This is a sticker-like, vector-flavored look.
 - Interior details (clothing folds, hair strands) are drawn sparingly — a few bold interior lines, not sketchy hatching.
 
@@ -63,8 +66,8 @@ Faces carry almost all the personality in this style:
   - Shadow tone = base color shifted **darker and slightly warmer/purpler**, roughly −15–20% lightness. No soft airbrushed gradients.
   - Light source is **top-front**, so shadows sit under the hair fringe, under the chin/head onto the torso, on the far side of rounded shapes, and under clothing overlaps.
 - **Optional single highlight tone** on hair, metal, and the top of the head (+10–15% lightness). Metal (helmets, blades) gets a hard-edged highlight streak.
-- **Subtle texture:** the reference art has a faint speckled/noise texture inside fills. This is an optional final pass (see guide 02, step 8) — keep it barely visible.
-- **No baked-in drop shadow.** The oval ground shadows in the reference sheet are separate; in our pipeline the engine draws the shadow (guide 06).
+- **Subtle texture:** the reference art has a faint speckled/noise texture inside fills. A well-trained style model reproduces this on its own — don't prompt for "texture" or "noise" explicitly (it invites grain artifacts); if generations come out too flat, that's a training-set issue.
+- **No baked-in drop shadow.** The oval ground shadows in the reference sheet are separate; in our pipeline the engine draws the shadow (guide 08).
 
 ### 1.5 Silhouette test
 
@@ -94,5 +97,5 @@ Key rules for environment assets:
 - [ ] One saturated accent color max; everything else muted/earthy
 - [ ] Eyebrows doing the emotional work; no nose; minimal mouth
 - [ ] Passes the silhouette test
-- [ ] Every body part on its own layer with overlap drawn (guide 02)
+- [ ] Characters only: rig-friendly A-pose with daylight between limbs (guide 02, step 4), then split into part layers with overlaps reconstructed (guide 04)
 - [ ] No baked ground shadow

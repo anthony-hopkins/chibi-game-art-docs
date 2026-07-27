@@ -1,6 +1,6 @@
-# 06 – Getting Spine Characters into Godot
+# 08 – Getting Spine Characters into Godot
 
-This guide exports the animated character from [guide 05](05-animating-in-spine.md) and gets it running in **Godot 4.4+** via the official **spine-godot** runtime — including placing it in a 2.5D scene like [2.5D-env-example.png](reference-images/2.5D-env-example.png).
+This guide exports the animated character from [guide 07](07-animating-in-spine.md) and gets it running in **Godot 4.4+** via the official **spine-godot** runtime — including placing it in a 2.5D scene like [2.5D-env-example.png](reference-images/2.5D-env-example.png).
 
 > **Licensing:** the Spine runtimes require a valid Spine license per Esoteric Software's runtime license. If you own the Spine editor, you're covered — but ship builds must comply with the runtime license terms (<https://esotericsoftware.com/spine-runtimes-license>).
 
@@ -10,10 +10,10 @@ This guide exports the animated character from [guide 05](05-animating-in-spine.
 
 1. In Spine: **Spine menu (top-left) ▸ Export…**
 2. Format: **JSON** while developing (human-readable, diffable). Switch to **Binary** (`.skel`) for release — smaller and faster to load. Both work identically in Godot.
-3. Check **Texture Atlas ▸ Pack** — this is where the full-canvas whitespace from guide 03 gets stripped:
+3. Check **Texture Atlas ▸ Pack** — this is where the full-canvas whitespace from guide 05 gets stripped:
    - Open **Pack Settings**: enable **Strip whitespace X/Y**, **Rotation** on, **Premultiply alpha** ON (the Godot runtime's default materials expect PMA; if colors look fringed/dark in Godot, this setting is the first thing to check).
    - Max page size 2048×2048 is plenty for one chibi.
-4. **Scale:** we authored at 1024 px canvas for a character that might render ~150–200 px tall in-game. Export at a scale that matches your game resolution, e.g. **0.25**, rather than shipping 4× pixels and downscaling every frame. You can export multiple scales later if needed.
+4. **Scale:** the split character came from a 2048 px canvas, but in-game it might render ~150–200 px tall. Export at a scale that matches your game resolution, e.g. **0.1–0.15**, rather than shipping 10× pixels and downscaling every frame. You can export multiple scales later if needed.
 5. Output folder: export **directly into your Godot project**, e.g. `res://assets/characters/hero/`. You get three files:
 
 ```
@@ -46,7 +46,7 @@ After installation, the editor gains new node types (`SpineSprite`) and resource
 4. In the SpineSprite inspector:
    - Create a new **SpineSkeletonDataResource** in the *Skeleton Data Res* slot.
    - Inside it, assign **Skeleton File** → `hero.json` and **Atlas Res** → new `SpineAtlasResource` pointing at `hero.atlas`.
-5. The character appears in the viewport. Because we put the **origin at the feet** in Spine (guide 04), the SpineSprite's position is the ground contact — add your `CollisionShape2D` capsule around the body accordingly.
+5. The character appears in the viewport. Because we put the **origin at the feet** in Spine (guide 06), the SpineSprite's position is the ground contact — add your `CollisionShape2D` capsule around the body accordingly.
 6. Save as `res://scenes/hero.tscn`.
 
 ## Step 4 — Play animations from GDScript
@@ -61,7 +61,7 @@ const SPEED := 140.0
 func _ready() -> void:
     var state := spine.get_animation_state()
     # Crossfade durations between any two animations (matches the
-    # 0.15 s mix previewed in Spine, guide 05):
+    # 0.15 s mix previewed in Spine, guide 07):
     spine.get_skeleton().get_data().set_default_mix(0.15)
     state.set_animation("idle", true, 0)   # name, loop, track
 
@@ -100,7 +100,7 @@ Key runtime concepts (they map 1:1 to what you built in Spine):
 
 - **Animation state tracks**: track 0 = full-body animations. You can layer, e.g., a `blink` on track 1 without touching the walk on track 0.
 - `set_animation` replaces the track now (with crossfade); `add_animation` queues after the current one — that's how attack returns to idle.
-- **Events** keyed in Spine (guide 05, `hit`) arrive as the `animation_event` signal — gameplay stays frame-accurate no matter how you retime the animation later.
+- **Events** keyed in Spine (guide 07, `hit`) arrive as the `animation_event` signal — gameplay stays frame-accurate no matter how you retime the animation later.
 
 ## Step 5 — Placing 2D characters in a 2.5D world
 
@@ -111,7 +111,7 @@ The environment reference is a low-poly 3D scene with flat-shaded surfaces; the 
 Fake the depth entirely in 2D, like most "2.5D" top-down games:
 
 1. World root: `Node2D` with **Y Sort Enabled** checked.
-2. Environment props (barrels, tables, walls) are `Sprite2D`s drawn with the high-angle perspective baked into the art (matching the reference's camera angle — front faces visible, tops visible and foreshortened).
+2. Environment props (barrels, tables, walls) are `Sprite2D`s generated with the high-angle perspective baked in — that's exactly what the `three-quarter high-angle view` line in the prop recipes of [guide 03](03-scenario-prompt-library.md) produces. Floors use `TileMapLayer` with the seamless tiles from guide 03, section 6a.
 3. Characters and props all children of the Y-sorted node → whoever is lower on screen draws in front, so characters walk in front of and behind props automatically. Keep each sprite's **origin at its ground contact point** (we already did this for the SpineSprite in Step 3).
 4. Ground shadow: add a soft dark ellipse `Sprite2D` (30–40% opacity) as a child of the character, at the feet, *below* the SpineSprite. This replaces the baked shadows we deliberately excluded from the art.
 
@@ -135,11 +135,11 @@ Option B is meaningfully more setup (one SubViewport per character type, viewpor
 |---|---|
 | "Skeleton version X does not match" on load | Spine editor and spine-godot runtime minor versions differ — re-export or switch runtime build |
 | Dark halo / fringes around the character | Premultiplied alpha mismatch — re-export atlas with **Premultiply alpha** checked (Step 1) |
-| Character floats above/below the floor | Skeleton origin wasn't at the feet — fix in Spine setup pose (guide 04, step 5), re-export |
+| Character floats above/below the floor | Skeleton origin wasn't at the feet — fix in Spine setup pose (guide 06, step 5), re-export |
 | Parts pop apart during animation in-game but not in Spine | You edited art and re-exported PNGs but not the atlas — always re-export the atlas after art changes |
 | Animations snap instead of blending | `set_default_mix` not set (or 0) — set it in `_ready` or per-pair in Spine's export settings |
-| Character drifts sideways while walking | Root motion keyed into the walk loop — remove root translation keys (guide 05, walk step 4) |
+| Character drifts sideways while walking | Root motion keyed into the walk loop — remove root translation keys (guide 07, walk step 4) |
 
 ---
 
-That's the full pipeline: GIMP layers → aligned PNGs → Spine rig → animations with events → Godot scenes. For the next character, the whole loop (guides 02–06) typically takes an afternoon once, and re-iterating art or animation afterwards touches only one stage at a time.
+That's the full pipeline: Scenario generation → GIMP split into aligned part PNGs → Spine rig → animations with events → Godot scenes. For the next character, the whole loop (guides 02–08) typically takes an afternoon, and iterating on art, rig, or animation afterwards touches only one stage at a time.
